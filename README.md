@@ -12,4 +12,16 @@ PGDATABASE=<database_name_here>
 
 with the correct database name for that environment (see `/db/setup.sql` for the database names).
 
+So the `.env.test` file should be as follow:
+
+```
+PGDATABASE=nc_news_test
+```
+
+And the `.env.development` file should be:
+
+```
+PGDATABASE=nc_news
+```
+
 **_Double check_** that these .env files are `.gitignored`.
