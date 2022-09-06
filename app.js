@@ -1,12 +1,15 @@
 const express = require('express');
 const { getTopics } = require('./controllers/topics.controllers');
 const { getArticleById } = require('./controllers/articles.controllers');
+const { getUsers } = require('./controllers/users.controllers');
 
 const app = express();
 
 app.get('/api/topics', getTopics);
 
 app.get('/api/articles/:article_id', getArticleById);
+
+app.get('/api/users', getUsers);
 
 app.use('/*', (req, res, next) => {
 	res.status(404).send({ msg: 'Page not found.' });

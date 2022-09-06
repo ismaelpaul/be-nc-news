@@ -84,3 +84,23 @@ describe('/api/articles/:article_id', () => {
 		});
 	});
 });
+
+describe('/api/users', () => {
+	describe('GET', () => {
+		test('200: responds with an array of user objects', () => {
+			return request(app)
+				.get('/api/users')
+				.expect(200)
+				.then((response) => {
+					const allUsers = response.body.user;
+					expect(typeof response.body).toBe('object');
+					expect(Array.isArray(allUsers)).toBe(true);
+					allUsers.forEach((user) => {
+						expect(user).toHaveProperty('username', expect.any(String));
+						expect(user).toHaveProperty('name', expect.any(String));
+						expect(user).toHaveProperty('avatar_url', expect.any(String));
+					});
+				});
+		});
+	});
+});
