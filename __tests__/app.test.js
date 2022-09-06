@@ -74,12 +74,65 @@ describe('/api/articles/:article_id', () => {
 					expect(response.body.msg).toEqual('Invalid ID.');
 				});
 		});
-		test("404: responds with an error msg when user requests id that doesn't exist  ", () => {
+		test("404: responds with an error msg when user requests id that doesn't exist", () => {
 			return request(app)
 				.get('/api/articles/32993')
 				.expect(404)
 				.then((response) => {
 					expect(response.body.msg).toEqual('Article not found.');
+				});
+		});
+	});
+	describe('PATCH', () => {
+		test('200: responds with the updated article', () => {
+			const newVotes = 1;
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
+			return request(app)
+				.patch('/api/articles/3')
+				.send(increasingVotes)
+				.expect(200)
+				.then((response) => {
+					const updatedArticle = {
+						article_id: 3,
+						title: 'Eight pug gifs that remind me of mitch',
+						topic: 'mitch',
+						author: 'icellusedkars',
+						body: 'some gifs',
+						created_at: '2020-11-03T09:12:00.000Z',
+						votes: 1,
+					};
+					expect(response.body.article).toEqual(updatedArticle);
+				});
+		});
+		test('400: responds with an error msg when user requests invalid id', () => {
+			return request(app)
+				.get('/api/articles/invalid')
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Invalid ID.');
+				});
+		});
+		test("404: responds with an error msg when user requests id that doesn't exist", () => {
+			return request(app)
+				.get('/api/articles/32993')
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Article not found.');
+				});
+		});
+		test('404: responds with an error msg when user requests an update with wrong data type', () => {
+			const newVotes = 'wrongtype';
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
+			return request(app)
+				.patch('/api/articles/3')
+				.send(increasingVotes)
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Wrong data type.');
 				});
 		});
 	});
