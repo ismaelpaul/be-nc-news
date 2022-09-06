@@ -107,16 +107,26 @@ describe('/api/articles/:article_id', () => {
 				});
 		});
 		test('400: responds with an error msg when user requests invalid id', () => {
+			const newVotes = 1;
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
 			return request(app)
-				.get('/api/articles/invalid')
+				.patch('/api/articles/invalid')
+				.send(increasingVotes)
 				.expect(400)
 				.then((response) => {
 					expect(response.body.msg).toEqual('Invalid ID.');
 				});
 		});
 		test("404: responds with an error msg when user requests id that doesn't exist", () => {
+			const newVotes = 1;
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
 			return request(app)
-				.get('/api/articles/32993')
+				.patch('/api/articles/329933')
+				.send(increasingVotes)
 				.expect(404)
 				.then((response) => {
 					expect(response.body.msg).toEqual('Article not found.');
