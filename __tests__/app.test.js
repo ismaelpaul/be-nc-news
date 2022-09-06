@@ -122,7 +122,7 @@ describe('/api/articles/:article_id', () => {
 					expect(response.body.msg).toEqual('Article not found.');
 				});
 		});
-		test('404: responds with an error msg when user requests an update with wrong data type', () => {
+		test('400: responds with an error msg when user requests an update with wrong data type', () => {
 			const newVotes = 'wrongtype';
 			const increasingVotes = {
 				inc_votes: newVotes,
@@ -130,9 +130,21 @@ describe('/api/articles/:article_id', () => {
 			return request(app)
 				.patch('/api/articles/3')
 				.send(increasingVotes)
-				.expect(404)
+				.expect(400)
 				.then((response) => {
 					expect(response.body.msg).toEqual('Wrong data type.');
+				});
+		});
+		test('400: responds with an error msg when user requests an update with missing key', () => {
+			const increasingVotes = {
+				page: 3,
+			};
+			return request(app)
+				.patch('/api/articles/3')
+				.send(increasingVotes)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Bad request.');
 				});
 		});
 	});

@@ -15,8 +15,10 @@ exports.updateArticleVotes = (incrementVoteBy, articleId) => {
 	const inc_votes = incrementVoteBy;
 	const article_id = articleId;
 
-	if (typeof inc_votes !== 'number') {
-		return Promise.reject({ status: 404, msg: 'Wrong data type.' });
+	if (inc_votes === undefined) {
+		return Promise.reject({ status: 400, msg: 'Bad request.' });
+	} else if (typeof inc_votes !== 'number') {
+		return Promise.reject({ status: 400, msg: 'Wrong data type.' });
 	} else {
 		return db
 			.query(
