@@ -56,15 +56,6 @@ describe('/api/articles/:article_id', () => {
 						votes: 0,
 						comment_count: 2,
 					});
-					expect(typeof response.body).toBe('object');
-					expect(article).toHaveProperty('article_id', expect.any(Number));
-					expect(article).toHaveProperty('title', expect.any(String));
-					expect(article).toHaveProperty('topic', expect.any(String));
-					expect(article).toHaveProperty('author', expect.any(String));
-					expect(article).toHaveProperty('body', expect.any(String));
-					expect(article).toHaveProperty('created_at', expect.any(String));
-					expect(article).toHaveProperty('votes', expect.any(Number));
-					expect(article).toHaveProperty('comment_count', expect.any(Number));
 				});
 		});
 		test('400: responds with an error msg when user requests invalid id', () => {
