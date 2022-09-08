@@ -36,7 +36,14 @@ exports.selectArticleById = (article_id) => {
 	return db
 		.query(
 			`
-			SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes,
+			SELECT 
+			articles.article_id, 
+			articles.title, 
+			articles.topic, 
+			articles.author, 
+			articles.body, 
+			articles.created_at, 
+			articles.votes,
 			COUNT(comments.article_id)::INT AS comment_count
 			FROM articles
 			LEFT JOIN comments ON articles.article_id = comments.article_id 
@@ -51,9 +58,8 @@ exports.selectArticleById = (article_id) => {
 			return result.rows[0];
 		});
 };
-exports.updateArticleVotes = (incrementVoteBy, articleId) => {
+exports.updateArticleVotes = (incrementVoteBy, article_id) => {
 	const inc_votes = incrementVoteBy;
-	const article_id = articleId;
 
 	if (inc_votes === undefined) {
 		return Promise.reject({ status: 400, msg: 'Bad request.' });
@@ -72,4 +78,31 @@ exports.updateArticleVotes = (incrementVoteBy, articleId) => {
 				return result.rows[0];
 			});
 	}
+};
+
+exports.selectCommentsByArticleId = (article_id) => {
+	return db
+		.query(
+			`
+	SELECT 
+	comments.body, 
+	comments.votes, 
+	comments.author,
+	comments.comment_id,
+	comments.created_at
+	FROM comments
+	LEFT JOIN articles ON comments.article_id = articles.article_id 
+	WHERE articles.article_id = $1;
+	`,
+			[article_id]
+		)
+		.then((result) => {
+			if (result.rowCount === 0) {
+				return Promise.reject({
+					status: 404,
+					msg: "Comment not found, ID doesn't exist.",
+				});
+			}
+			return result.rows;
+		});
 };
