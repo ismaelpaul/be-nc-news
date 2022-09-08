@@ -1,7 +1,17 @@
 const {
 	selectArticleById,
 	updateArticleVotes,
+	selectArticles,
 } = require('../models/articles.models');
+
+exports.getArticles = (req, res, next) => {
+	const { sort_by, topic } = req.query;
+	selectArticles(sort_by, topic)
+		.then((articles) => {
+			res.status(200).send({ articles });
+		})
+		.catch(next);
+};
 
 exports.getArticleById = (req, res, next) => {
 	const { article_id } = req.params;
