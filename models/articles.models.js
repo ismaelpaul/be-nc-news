@@ -7,7 +7,7 @@ exports.selectArticles = (sort_by = 'created_at', topic) => {
 	}
 
 	let queryStr = `
-	SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes,
+	SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,
 	COUNT(comments.article_id)::INT AS comment_count
 	FROM articles
 	LEFT JOIN comments ON articles.article_id = comments.article_id
@@ -22,6 +22,12 @@ exports.selectArticles = (sort_by = 'created_at', topic) => {
 	queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} DESC;`;
 
 	return db.query(queryStr, queryValues).then((result) => {
+		if (result.rowCount === 0) {
+			return Promise.reject({
+				status: 404,
+				msg: 'Article not found, invalid query or query has no articles.',
+			});
+		}
 		return result.rows;
 	});
 };

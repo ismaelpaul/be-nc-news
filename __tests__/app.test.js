@@ -53,7 +53,6 @@ describe('/api/articles', () => {
 						expect(article).toHaveProperty('title', expect.any(String));
 						expect(article).toHaveProperty('topic', expect.any(String));
 						expect(article).toHaveProperty('author', expect.any(String));
-						expect(article).toHaveProperty('body', expect.any(String));
 						expect(article).toHaveProperty('created_at');
 						expect(article).toHaveProperty('votes', expect.any(Number));
 						expect(article).toHaveProperty('comment_count', expect.any(Number));
@@ -69,7 +68,7 @@ describe('/api/articles', () => {
 					expect(allArticles).toBeSortedBy('created_at', { descending: true });
 				});
 		});
-		test('200: articles are sorted by a passed sort_by query', () => {
+		test('200: responds with an array of articles that are sorted by a passed sort_by query', () => {
 			return request(app)
 				.get('/api/articles?sort_by=topic')
 				.expect(200)
@@ -78,7 +77,7 @@ describe('/api/articles', () => {
 					expect(allArticles).toBeSortedBy('topic', { descending: true });
 				});
 		});
-		test('400: for a sort_by that is not an existing column', () => {
+		test('400: responds with an error msg for a sort_by that is not an existing column', () => {
 			return request(app)
 				.get('/api/articles?sort_by=not_a_column')
 				.expect(400)
@@ -86,7 +85,7 @@ describe('/api/articles', () => {
 					expect(response.body.msg).toBe('Bad request');
 				});
 		});
-		test('200: articles are filtered by a passed topic query', () => {
+		test('200: responds with an array of articles that are filtered by a passed topic query', () => {
 			return request(app)
 				.get('/api/articles?topic=cats')
 				.expect(200)
@@ -98,11 +97,30 @@ describe('/api/articles', () => {
 						expect(article).toHaveProperty('title', expect.any(String));
 						expect(article).toHaveProperty('topic', expect.any(String));
 						expect(article).toHaveProperty('author', expect.any(String));
-						expect(article).toHaveProperty('body', expect.any(String));
 						expect(article).toHaveProperty('created_at');
 						expect(article).toHaveProperty('votes', expect.any(Number));
 						expect(article).toHaveProperty('comment_count', expect.any(Number));
 					});
+				});
+		});
+		test('404: responds with an error msg when filtered by a passed topic query that is invalid', () => {
+			return request(app)
+				.get('/api/articles?topic=invalid-topic')
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toBe(
+						'Article not found, invalid query or query has no articles.'
+					);
+				});
+		});
+		test('404: responds with an error msg when filtered by a passed topic query that is valid but has no articles', () => {
+			return request(app)
+				.get('/api/articles?topic=paper')
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toBe(
+						'Article not found, invalid query or query has no articles.'
+					);
 				});
 		});
 	});
