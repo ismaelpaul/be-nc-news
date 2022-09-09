@@ -8,14 +8,16 @@ beforeEach(() => seed(testData));
 
 afterAll(() => db.end());
 
-describe('Wrong requests', () => {
-	test('404: responds with an error msg when wrong path is given', () => {
-		return request(app)
-			.get('/api/wrongpath')
-			.expect(404)
-			.then((response) => {
-				expect(response.body).toEqual({ msg: 'Page not found.' });
-			});
+describe('/api/wrongpath', () => {
+	describe('GET', () => {
+		test('404: responds with an error msg when wrong path is given', () => {
+			return request(app)
+				.get('/api/wrongpath')
+				.expect(404)
+				.then((response) => {
+					expect(response.body).toEqual({ msg: 'Page not found.' });
+				});
+		});
 	});
 });
 
@@ -208,7 +210,9 @@ describe('/api/articles/:article_id', () => {
 				.send(increasingVotes)
 				.expect(404)
 				.then((response) => {
-					expect(response.body.msg).toEqual('Article not found.');
+					expect(response.body.msg).toEqual(
+						'Article not found under ID 329933.'
+					);
 				});
 		});
 		test('400: responds with an error msg when user requests an update with wrong data type', () => {
@@ -241,7 +245,7 @@ describe('/api/articles/:article_id', () => {
 
 describe('/api/articles/:article_id/comments', () => {
 	describe('GET', () => {
-		test('200: responds with an array of commets for the given article_id', () => {
+		test('200: responds with an array of comments for the given article id', () => {
 			return request(app)
 				.get('/api/articles/3/comments')
 				.expect(200)
@@ -258,6 +262,15 @@ describe('/api/articles/:article_id/comments', () => {
 					});
 				});
 		});
+		test('200: responds with an empty array of comments when the article id is valid but has no comments', () => {
+			return request(app)
+				.get('/api/articles/8/comments')
+				.expect(200)
+				.then((response) => {
+					const allComments = response.body.comments;
+					expect(allComments).toEqual([]);
+				});
+		});
 		test('400: responds with an error msg when user requests comments with invalid id', () => {
 			return request(app)
 				.get('/api/articles/invalid/comments')
@@ -272,7 +285,7 @@ describe('/api/articles/:article_id/comments', () => {
 				.expect(404)
 				.then((response) => {
 					expect(response.body.msg).toEqual(
-						"Comment not found, ID doesn't exist."
+						'Article not found under ID 32993.'
 					);
 				});
 		});

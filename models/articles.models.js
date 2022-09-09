@@ -7,7 +7,13 @@ exports.selectArticles = (sort_by = 'created_at', topic) => {
 	}
 
 	let queryStr = `
-	SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,
+	SELECT 
+	articles.article_id, 
+	articles.title, 
+	articles.topic, 
+	articles.author, 
+	articles.created_at, 
+	articles.votes,
 	COUNT(comments.article_id)::INT AS comment_count
 	FROM articles
 	LEFT JOIN comments ON articles.article_id = comments.article_id
@@ -73,7 +79,10 @@ exports.updateArticleVotes = (incrementVoteBy, article_id) => {
 			)
 			.then((result) => {
 				if (result.rowCount === 0) {
-					return Promise.reject({ status: 404, msg: 'Article not found.' });
+					return Promise.reject({
+						status: 404,
+						msg: `Article not found under ID ${article_id}.`,
+					});
 				}
 				return result.rows[0];
 			});
@@ -81,26 +90,36 @@ exports.updateArticleVotes = (incrementVoteBy, article_id) => {
 };
 
 exports.selectCommentsByArticleId = (article_id) => {
+	let numberOfArticles = 0;
 	return db
-		.query(
-			`
-	SELECT 
-	comments.body, 
-	comments.votes, 
-	comments.author,
-	comments.comment_id,
-	comments.created_at
-	FROM comments
-	LEFT JOIN articles ON comments.article_id = articles.article_id 
-	WHERE articles.article_id = $1;
-	`,
-			[article_id]
-		)
+		.query(`SELECT articles.article_id FROM articles`)
 		.then((result) => {
-			if (result.rowCount === 0) {
+			numberOfArticles = result.rows.length;
+		})
+		.then(() => {
+			return db.query(
+				`
+		SELECT 
+		comments.body, 
+		comments.votes, 
+		comments.author,
+		comments.comment_id,
+		comments.created_at
+		FROM comments
+		LEFT JOIN articles ON comments.article_id = articles.article_id 
+		WHERE articles.article_id = $1;
+		`,
+				[article_id]
+			);
+		})
+		.then((result) => {
+			if (result !== undefined) {
+				if (article_id < numberOfArticles) {
+					return Promise.resolve(result.rows);
+				}
 				return Promise.reject({
 					status: 404,
-					msg: "Comment not found, ID doesn't exist.",
+					msg: `Article not found under ID ${article_id}.`,
 				});
 			}
 			return result.rows;
