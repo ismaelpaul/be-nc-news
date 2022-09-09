@@ -290,6 +290,94 @@ describe('/api/articles/:article_id/comments', () => {
 				});
 		});
 	});
+	describe('POST', () => {
+		test('201: responds with comment newly added to the database', () => {
+			const newComment = {
+				username: 'icellusedkars',
+				body: "I don't know",
+			};
+			return request(app)
+				.post('/api/articles/2/comments')
+				.send(newComment)
+				.expect(201)
+				.then((response) => {
+					const comment = response.body.comment;
+					expect(comment).toEqual({
+						comment_id: 19,
+						votes: 0,
+						created_at: expect.any(String),
+						author: 'icellusedkars',
+						body: "I don't know",
+						article_id: 2,
+					});
+				});
+		});
+		test('400: responds with an error msg when user tries to post a comment with invalid id', () => {
+			const newComment = {
+				username: 'icellusedkars',
+				body: "I don't know",
+			};
+			return request(app)
+				.post('/api/articles/invalid/comments')
+				.send(newComment)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Invalid ID.');
+				});
+		});
+		test('404 responds with an error msg when user tries to post a comment with id that does not exist', () => {
+			const newComment = {
+				username: 'icellusedkars',
+				body: "I don't know",
+			};
+			return request(app)
+				.post('/api/articles/32993/comments')
+				.send(newComment)
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toEqual('ID 32993 does not exist.');
+				});
+		});
+		test('400: responds with an error msg when user gives a body with wrong data type', () => {
+			const newComment = {
+				username: 'icellusedkars',
+				body: true,
+			};
+			return request(app)
+				.post('/api/articles/3/comments')
+				.send(newComment)
+				.expect(400)
+				.then((result) => {
+					expect(result.body.msg).toEqual('Wrong data type.');
+				});
+		});
+		test('400: responds with an error msg when user gives a body with right data type but it is empty', () => {
+			const newComment = {
+				username: 'icellusedkars',
+				body: '',
+			};
+			return request(app)
+				.post('/api/articles/3/comments')
+				.send(newComment)
+				.expect(400)
+				.then((result) => {
+					expect(result.body.msg).toEqual('Empty comment.');
+				});
+		});
+		test('400: responds with an error msg when user does not exist', () => {
+			const newComment = {
+				username: 'jarbas',
+				body: "I don't know",
+			};
+			return request(app)
+				.post('/api/articles/3/comments')
+				.send(newComment)
+				.expect(400)
+				.then((result) => {
+					expect(result.body.msg).toEqual('User jarbas does not exist.');
+				});
+		});
+	});
 });
 
 describe('/api/users', () => {

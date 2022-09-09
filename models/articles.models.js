@@ -125,3 +125,75 @@ exports.selectCommentsByArticleId = (article_id) => {
 			return result.rows;
 		});
 };
+
+exports.insertPost = (newComment, article_id) => {
+	const { username, body } = newComment;
+
+	if (typeof body !== 'string') {
+		return Promise.reject({
+			status: 400,
+			msg: `Wrong data type.`,
+		});
+	} else if (typeof body === 'string' && body.length === 0) {
+		return Promise.reject({
+			status: 400,
+			msg: `Empty comment.`,
+		});
+	}
+	let usersArray = [];
+	return db
+		.query(
+			`
+	SELECT username 
+	FROM users`
+		)
+		.then((result) => {
+			usersArray = result.rows;
+			const newUsersArray = usersArray.map((user) => {
+				return user.username;
+			});
+			let checkUser = false;
+
+			newUsersArray.forEach((userChecking) => {
+				if (username === userChecking) {
+					checkUser = true;
+				}
+			});
+
+			if (checkUser === false) {
+				return Promise.reject({
+					status: 400,
+					msg: `User ${username} does not exist.`,
+				});
+			}
+			return db
+				.query(
+					`
+			SELECT article_id 
+			FROM articles`
+				)
+				.then((result) => {
+					if (article_id > result.rows.length) {
+						return Promise.reject({
+							status: 404,
+							msg: `ID ${article_id} does not exist.`,
+						});
+					}
+				})
+				.then(() => {
+					return db
+						.query(
+							`
+				INSERT INTO comments (body, article_id, author)
+				VALUES
+				($1, $2, $3)
+				RETURNING *;
+				`,
+							[body, article_id, username]
+						)
+						.then((result) => {
+							return result.rows[0];
+						});
+				});
+		});
+};
