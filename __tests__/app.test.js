@@ -8,14 +8,16 @@ beforeEach(() => seed(testData));
 
 afterAll(() => db.end());
 
-describe('Wrong requests', () => {
-	test('404: responds with an error msg when wrong path is given', () => {
-		return request(app)
-			.get('/api/wrongpath')
-			.expect(404)
-			.then((response) => {
-				expect(response.body).toEqual({ msg: 'Page not found.' });
-			});
+describe('/api/wrongpath', () => {
+	describe('GET', () => {
+		test('404: responds with an error msg when wrong path is given', () => {
+			return request(app)
+				.get('/api/wrongpath')
+				.expect(404)
+				.then((response) => {
+					expect(response.body).toEqual({ msg: 'Page not found.' });
+				});
+		});
 	});
 });
 
@@ -208,7 +210,9 @@ describe('/api/articles/:article_id', () => {
 				.send(increasingVotes)
 				.expect(404)
 				.then((response) => {
-					expect(response.body.msg).toEqual('Article not found.');
+					expect(response.body.msg).toEqual(
+						'Article not found under ID 329933.'
+					);
 				});
 		});
 		test('400: responds with an error msg when user requests an update with wrong data type', () => {
@@ -234,6 +238,55 @@ describe('/api/articles/:article_id', () => {
 				.expect(400)
 				.then((response) => {
 					expect(response.body.msg).toEqual('Bad request.');
+				});
+		});
+	});
+});
+
+describe('/api/articles/:article_id/comments', () => {
+	describe('GET', () => {
+		test('200: responds with an array of comments for the given article id', () => {
+			return request(app)
+				.get('/api/articles/3/comments')
+				.expect(200)
+				.then((response) => {
+					const allComments = response.body.comments;
+					expect(Array.isArray(allComments)).toBe(true);
+					expect(allComments.length > 0).toBe(true);
+					allComments.forEach((comment) => {
+						expect(comment).toHaveProperty('body', expect.any(String));
+						expect(comment).toHaveProperty('votes', expect.any(Number));
+						expect(comment).toHaveProperty('author', expect.any(String));
+						expect(comment).toHaveProperty('comment_id', expect.any(Number));
+						expect(comment).toHaveProperty('created_at');
+					});
+				});
+		});
+		test('200: responds with an empty array of comments when the article id is valid but has no comments', () => {
+			return request(app)
+				.get('/api/articles/8/comments')
+				.expect(200)
+				.then((response) => {
+					const allComments = response.body.comments;
+					expect(allComments).toEqual([]);
+				});
+		});
+		test('400: responds with an error msg when user requests comments with invalid id', () => {
+			return request(app)
+				.get('/api/articles/invalid/comments')
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Invalid ID.');
+				});
+		});
+		test("404: responds with an error msg when user requests comments with an id that doesn't exist", () => {
+			return request(app)
+				.get('/api/articles/32993/comments')
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toEqual(
+						'Article not found under ID 32993.'
+					);
 				});
 		});
 	});
