@@ -8,6 +8,7 @@ const {
 	postCommentByArticleId,
 } = require('./controllers/articles.controllers');
 const { getUsers } = require('./controllers/users.controllers');
+const { deleteCommentById } = require('./controllers/comments.controllers');
 
 const app = express();
 
@@ -25,6 +26,10 @@ app.post('/api/articles/:article_id/comments', postCommentByArticleId);
 
 //users
 app.get('/api/users', getUsers);
+
+//comments
+
+app.delete('/api/comments/:comment_id', deleteCommentById);
 
 //error handling
 app.use('/*', (req, res, next) => {
