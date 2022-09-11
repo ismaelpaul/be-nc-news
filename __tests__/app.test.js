@@ -503,3 +503,27 @@ describe('/api/users', () => {
 		});
 	});
 });
+
+describe('/api/comment/:comment_id', () => {
+	describe('DELETE', () => {
+		test('204: responds with an empty response body', () => {
+			return request(app).delete('/api/comments/3').expect(204);
+		});
+		test('400: responds with an error msg when user tries to delete comment with invalid id ', () => {
+			return request(app)
+				.delete('/api/comments/invalid')
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Invalid ID.');
+				});
+		});
+		test('404: responds with an error msg when user tries to delete comment with a valid id but id does not exist', () => {
+			return request(app)
+				.delete('/api/comments/93939')
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toEqual('ID 93939 does not exist.');
+				});
+		});
+	});
+});
