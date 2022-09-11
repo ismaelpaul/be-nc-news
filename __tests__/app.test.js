@@ -55,28 +55,130 @@ describe('/api/articles', () => {
 						expect(article).toHaveProperty('title', expect.any(String));
 						expect(article).toHaveProperty('topic', expect.any(String));
 						expect(article).toHaveProperty('author', expect.any(String));
-						expect(article).toHaveProperty('created_at');
+						expect(article).toHaveProperty('created_at', expect.any(String));
 						expect(article).toHaveProperty('votes', expect.any(Number));
 						expect(article).toHaveProperty('comment_count', expect.any(Number));
 					});
 				});
 		});
-		test('200: responds with an array of articles sorted by date in descending order', () => {
+		test('200: responds with an array of articles sorted by date in descending order as default', () => {
 			return request(app)
 				.get('/api/articles')
 				.expect(200)
 				.then((response) => {
 					const allArticles = response.body.articles;
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles.length > 0).toBe(true);
 					expect(allArticles).toBeSortedBy('created_at', { descending: true });
+					allArticles.forEach((article) => {
+						expect(article).toHaveProperty('article_id', expect.any(Number));
+						expect(article).toHaveProperty('title', expect.any(String));
+						expect(article).toHaveProperty('topic', expect.any(String));
+						expect(article).toHaveProperty('author', expect.any(String));
+						expect(article).toHaveProperty('created_at', expect.any(String));
+						expect(article).toHaveProperty('votes', expect.any(Number));
+						expect(article).toHaveProperty('comment_count', expect.any(Number));
+					});
 				});
 		});
-		test('200: responds with an array of articles that are sorted by a passed sort_by query', () => {
+		test('200: responds with an array of articles sorted by date and ordered by a passed order query (ASC)', () => {
+			return request(app)
+				.get('/api/articles?order=ASC')
+				.expect(200)
+				.then((response) => {
+					const allArticles = response.body.articles;
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles.length > 0).toBe(true);
+					expect(allArticles).toBeSortedBy('created_at', { ascending: true });
+					allArticles.forEach((article) => {
+						expect(article).toHaveProperty('article_id', expect.any(Number));
+						expect(article).toHaveProperty('title', expect.any(String));
+						expect(article).toHaveProperty('topic', expect.any(String));
+						expect(article).toHaveProperty('author', expect.any(String));
+						expect(article).toHaveProperty('created_at', expect.any(String));
+						expect(article).toHaveProperty('votes', expect.any(Number));
+						expect(article).toHaveProperty('comment_count', expect.any(Number));
+					});
+				});
+		});
+		test('200: responds with an array of articles when passed an order query that is invalid', () => {
+			return request(app)
+				.get('/api/articles?order=invalid')
+				.expect(200)
+				.then((response) => {
+					const allArticles = response.body.articles;
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles.length > 0).toBe(true);
+					expect(allArticles).toBeSortedBy('created_at', { descending: true });
+					allArticles.forEach((article) => {
+						expect(article).toHaveProperty('article_id', expect.any(Number));
+						expect(article).toHaveProperty('title', expect.any(String));
+						expect(article).toHaveProperty('topic', expect.any(String));
+						expect(article).toHaveProperty('author', expect.any(String));
+						expect(article).toHaveProperty('created_at', expect.any(String));
+						expect(article).toHaveProperty('votes', expect.any(Number));
+						expect(article).toHaveProperty('comment_count', expect.any(Number));
+					});
+				});
+		});
+		test('200: responds with an array of articles that are sorted by a passed sort_by query (topic)', () => {
 			return request(app)
 				.get('/api/articles?sort_by=topic')
 				.expect(200)
 				.then((response) => {
 					const allArticles = response.body.articles;
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles.length > 0).toBe(true);
 					expect(allArticles).toBeSortedBy('topic', { descending: true });
+					allArticles.forEach((article) => {
+						expect(article).toHaveProperty('article_id', expect.any(Number));
+						expect(article).toHaveProperty('title', expect.any(String));
+						expect(article).toHaveProperty('topic', expect.any(String));
+						expect(article).toHaveProperty('author', expect.any(String));
+						expect(article).toHaveProperty('created_at', expect.any(String));
+						expect(article).toHaveProperty('votes', expect.any(Number));
+						expect(article).toHaveProperty('comment_count', expect.any(Number));
+					});
+				});
+		});
+		test('200: responds with an array of articles that are sorted by a passed sort_by query (title)', () => {
+			return request(app)
+				.get('/api/articles?sort_by=title')
+				.expect(200)
+				.then((response) => {
+					const allArticles = response.body.articles;
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles.length > 0).toBe(true);
+					expect(allArticles).toBeSortedBy('title', { descending: true });
+					allArticles.forEach((article) => {
+						expect(article).toHaveProperty('article_id', expect.any(Number));
+						expect(article).toHaveProperty('title', expect.any(String));
+						expect(article).toHaveProperty('topic', expect.any(String));
+						expect(article).toHaveProperty('author', expect.any(String));
+						expect(article).toHaveProperty('created_at', expect.any(String));
+						expect(article).toHaveProperty('votes', expect.any(Number));
+						expect(article).toHaveProperty('comment_count', expect.any(Number));
+					});
+				});
+		});
+		test('200: responds with an array of articles that are sorted by a passed sort_by query (title) and ordered by a passed order query (ASC)', () => {
+			return request(app)
+				.get('/api/articles?sort_by=title&order=ASC')
+				.expect(200)
+				.then((response) => {
+					const allArticles = response.body.articles;
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles.length > 0).toBe(true);
+					expect(allArticles).toBeSortedBy('title', { descending: false });
+					allArticles.forEach((article) => {
+						expect(article).toHaveProperty('article_id', expect.any(Number));
+						expect(article).toHaveProperty('title', expect.any(String));
+						expect(article).toHaveProperty('topic', expect.any(String));
+						expect(article).toHaveProperty('author', expect.any(String));
+						expect(article).toHaveProperty('created_at', expect.any(String));
+						expect(article).toHaveProperty('votes', expect.any(Number));
+						expect(article).toHaveProperty('comment_count', expect.any(Number));
+					});
 				});
 		});
 		test('400: responds with an error msg for a sort_by that is not an existing column', () => {
@@ -93,13 +195,14 @@ describe('/api/articles', () => {
 				.expect(200)
 				.then((response) => {
 					const allArticles = response.body.articles;
-					expect(allArticles.length).toBeGreaterThan(0);
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles.length > 0).toBe(true);
 					allArticles.forEach((article) => {
 						expect(article).toHaveProperty('article_id', expect.any(Number));
 						expect(article).toHaveProperty('title', expect.any(String));
 						expect(article).toHaveProperty('topic', expect.any(String));
 						expect(article).toHaveProperty('author', expect.any(String));
-						expect(article).toHaveProperty('created_at');
+						expect(article).toHaveProperty('created_at', expect.any(String));
 						expect(article).toHaveProperty('votes', expect.any(Number));
 						expect(article).toHaveProperty('comment_count', expect.any(Number));
 					});
@@ -111,18 +214,18 @@ describe('/api/articles', () => {
 				.expect(404)
 				.then((response) => {
 					expect(response.body.msg).toBe(
-						'Article not found, invalid query or query has no articles.'
+						'Article not found, topic does not exist'
 					);
 				});
 		});
-		test('404: responds with an error msg when filtered by a passed topic query that is valid but has no articles', () => {
+		test('200: responds with an empty array of articles when filtered by a passed topic query that is valid but has no articles (paper)', () => {
 			return request(app)
 				.get('/api/articles?topic=paper')
-				.expect(404)
+				.expect(200)
 				.then((response) => {
-					expect(response.body.msg).toBe(
-						'Article not found, invalid query or query has no articles.'
-					);
+					const allArticles = response.body.articles;
+					expect(Array.isArray(allArticles)).toBe(true);
+					expect(allArticles).toEqual([]);
 				});
 		});
 	});
@@ -268,6 +371,7 @@ describe('/api/articles/:article_id/comments', () => {
 				.expect(200)
 				.then((response) => {
 					const allComments = response.body.comments;
+					expect(Array.isArray(allComments)).toBe(true);
 					expect(allComments).toEqual([]);
 				});
 		});
