@@ -21,6 +21,65 @@ describe('/api/wrongpath', () => {
 	});
 });
 
+describe('/api', () => {
+	describe('GET', () => {
+		test('200: responds with a JSON file containing description of all api endpoints', () => {
+			const apis = {
+				'GET /api': {
+					description:
+						'serves up a json representation of all the available endpoints of the api',
+				},
+				'GET /api/topics': {
+					description: 'serves an array of all topics',
+					queries: [],
+					exampleResponse: {
+						topics: [{ slug: 'football', description: 'Footie!' }],
+					},
+				},
+				'GET /api/articles': {
+					description: 'serves an array of all topics',
+					queries: ['author', 'topic', 'sort_by', 'order'],
+					exampleResponse: {
+						articles: [
+							{
+								title: 'Seafood substitutions are increasing',
+								topic: 'cooking',
+								author: 'weegembump',
+								body: 'Text from the article..',
+								created_at: 1527695953341,
+							},
+						],
+					},
+				},
+				'GET /api/articles/:article_id': {
+					description: 'serves a single matching article',
+					queries: [],
+					exampleResponse: {
+						article: [
+							{
+								article_id: 3,
+								title: 'Eight pug gifs that remind me of mitch',
+								topic: 'mitch',
+								author: 'icellusedkars',
+								body: 'some gifs',
+								created_at: '2020-11-03T09:12:00.000Z',
+								votes: 0,
+								comment_count: 2,
+							},
+						],
+					},
+				},
+			};
+			return request(app)
+				.get('/api')
+				.expect(200)
+				.then((response) => {
+					expect(response.body).toEqual(apis);
+				});
+		});
+	});
+});
+
 describe('/api/topics', () => {
 	describe('GET', () => {
 		test('200: responds with an array of topic objects', () => {
