@@ -6,8 +6,6 @@ This project I made as part of the Backend module at [Northcoders](https://north
 
 -> [Hosted Version](https://news-backend-project.herokuapp.com/)
 
----
-
 ## Getting started
 
 ### 1. Clone this repository
@@ -77,8 +75,6 @@ PGDATABASE=nc_news
 ```
 npm test
 ```
-
----
 
 ## Requirements
 
