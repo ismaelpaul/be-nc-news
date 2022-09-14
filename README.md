@@ -76,7 +76,7 @@ PGDATABASE=nc_news
 npm test
 ```
 
-## Requirements
+## Minimum Requirements
 
 <ul>
     <li>Node.js version 16.17.0</li>
