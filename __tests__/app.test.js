@@ -457,7 +457,7 @@ describe('/api/articles/:article_id', () => {
 					);
 				});
 		});
-		test('400: responds with an error msg when user requests an update with wrong data type', () => {
+		test('400: responds with an error msg when user requests an article update with wrong data type', () => {
 			const newVotes = 'wrongtype';
 			const increasingVotes = {
 				inc_votes: newVotes,
@@ -691,6 +691,82 @@ describe('/api/comment/:comment_id', () => {
 				.expect(404)
 				.then((response) => {
 					expect(response.body.msg).toEqual('ID 93939 does not exist.');
+				});
+		});
+	});
+	describe('PATCH', () => {
+		test('200: responds with the updated comment', () => {
+			const newVotes = 1;
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
+			return request(app)
+				.patch('/api/comments/3')
+				.send(increasingVotes)
+				.expect(200)
+				.then((response) => {
+					const updatedComment = {
+						comment_id: 3,
+						body: 'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.',
+						article_id: 1,
+						author: 'icellusedkars',
+						votes: 101,
+						created_at: '2020-03-01T01:13:00.000Z',
+					};
+					expect(response.body.comment).toEqual(updatedComment);
+				});
+		});
+		test('400: responds with an error msg when user requests to update a comment with an invalid id', () => {
+			const newVotes = 1;
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
+			return request(app)
+				.patch('/api/comments/invalid')
+				.send(increasingVotes)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Invalid ID.');
+				});
+		});
+		test("404: responds with an error msg when user requests to update a comment with an id that doesn't exist", () => {
+			const newVotes = 1;
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
+			return request(app)
+				.patch('/api/comments/396333')
+				.send(increasingVotes)
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toEqual(
+						'Comment not found under ID 396333.'
+					);
+				});
+		});
+		test('400: responds with an error msg when user requests a comment update with wrong data type', () => {
+			const newVotes = 'wrongtype';
+			const increasingVotes = {
+				inc_votes: newVotes,
+			};
+			return request(app)
+				.patch('/api/comments/3')
+				.send(increasingVotes)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Wrong data type.');
+				});
+		});
+		test('400: responds with an error msg when user requests an update with missing key', () => {
+			const increasingVotes = {
+				page: 3,
+			};
+			return request(app)
+				.patch('/api/comments/3')
+				.send(increasingVotes)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Bad request.');
 				});
 		});
 	});

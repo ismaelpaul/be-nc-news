@@ -11,7 +11,10 @@ const {
 	getUsers,
 	getUserByUsername,
 } = require('./controllers/users.controllers');
-const { deleteCommentById } = require('./controllers/comments.controllers');
+const {
+	deleteCommentById,
+	patchCommentById,
+} = require('./controllers/comments.controllers');
 const { getApi } = require('./controllers/api.controllers');
 
 const app = express();
@@ -35,7 +38,7 @@ app.get('/api/users', getUsers);
 app.get('/api/users/:username', getUserByUsername);
 
 //comments
-
+app.patch('/api/comments/:comment_id', patchCommentById);
 app.delete('/api/comments/:comment_id', deleteCommentById);
 
 //error handling
