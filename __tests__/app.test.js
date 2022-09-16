@@ -643,6 +643,35 @@ describe('/api/users', () => {
 	});
 });
 
+describe('/api/users/:username', () => {
+	describe('GET', () => {
+		test('200: responds with a single matching user', () => {
+			return request(app)
+				.get('/api/users/lurker')
+				.expect(200)
+				.then((response) => {
+					const user = response.body.user;
+					expect(user).toEqual([
+						{
+							username: 'lurker',
+							name: 'do_nothing',
+							avatar_url:
+								'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+						},
+					]);
+				});
+		});
+		test('404: responds with an error msg when requests a user that does not exist', () => {
+			return request(app)
+				.get('/api/users/boris')
+				.expect(404)
+				.then((response) => {
+					expect(response.body.msg).toEqual('User boris not found.');
+				});
+		});
+	});
+});
+
 describe('/api/comment/:comment_id', () => {
 	describe('DELETE', () => {
 		test('204: responds with an empty response body', () => {

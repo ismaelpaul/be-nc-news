@@ -7,7 +7,10 @@ const {
 	getCommentsByArticleId,
 	postCommentByArticleId,
 } = require('./controllers/articles.controllers');
-const { getUsers } = require('./controllers/users.controllers');
+const {
+	getUsers,
+	getUserByUsername,
+} = require('./controllers/users.controllers');
 const { deleteCommentById } = require('./controllers/comments.controllers');
 const { getApi } = require('./controllers/api.controllers');
 
@@ -29,6 +32,7 @@ app.post('/api/articles/:article_id/comments', postCommentByArticleId);
 
 //users
 app.get('/api/users', getUsers);
+app.get('/api/users/:username', getUserByUsername);
 
 //comments
 
