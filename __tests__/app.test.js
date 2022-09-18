@@ -368,6 +368,152 @@ describe('/api/articles', () => {
 				});
 		});
 	});
+	describe('POST', () => {
+		test('201: responds with comment newly added to the database', () => {
+			const newArticle = {
+				author: 'rogersop',
+				title: "What's going on?",
+				body: 'I think I know',
+				topic: 'mitch',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(201)
+				.then((response) => {
+					expect(response.body.article).toEqual({
+						article_id: 13,
+						title: "What's going on?",
+						topic: 'mitch',
+						author: 'rogersop',
+						body: 'I think I know',
+						created_at: expect.any(String),
+						votes: 0,
+						comment_count: expect.any(Number),
+					});
+				});
+		});
+		test('400: responds with an error msg when user gives a author with wrong data type', () => {
+			const newArticle = {
+				author: 2,
+				title: "What's going on?",
+				body: 'I think I know',
+				topic: 'mitch',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Wrong data type.');
+				});
+		});
+		test('400: responds with an error msg when user gives a title with wrong data type', () => {
+			const newArticle = {
+				author: 'icellusedkars',
+				title: 42,
+				body: 'I think I know',
+				topic: 'mitch',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Wrong data type.');
+				});
+		});
+		test('400: responds with an error msg when user gives a body with wrong data type', () => {
+			const newArticle = {
+				author: 'icellusedkars',
+				title: "What's going on?",
+				body: [],
+				topic: 'mitch',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Wrong data type.');
+				});
+		});
+		test('400: responds with an error msg when user gives a topic with wrong data type', () => {
+			const newArticle = {
+				author: 'icellusedkars',
+				title: "What's going on?",
+				body: 'I think I know',
+				topic: true,
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Wrong data type.');
+				});
+		});
+		test('400: responds with an error msg when user gives a author with right data type but it is empty', () => {
+			const newArticle = {
+				author: '',
+				title: "What's going on?",
+				body: 'I think I know',
+				topic: 'mitch',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Article is not complete.');
+				});
+		});
+		test('400: responds with an error msg when user gives a title with right data type but it is empty', () => {
+			const newArticle = {
+				author: 'icellusedkars',
+				title: '',
+				body: 'I think I know',
+				topic: 'mitch',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Article is not complete.');
+				});
+		});
+		test('400: responds with an error msg when user gives a body with right data type but it is empty', () => {
+			const newArticle = {
+				author: 'icellusedkars',
+				title: "What's going on?",
+				body: '',
+				topic: 'mitch',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Article is not complete.');
+				});
+		});
+		test('400: responds with an error msg when user gives a topic with right data type but it is empty', () => {
+			const newArticle = {
+				author: 'icellusedkars',
+				title: "What's going on?",
+				body: 'I think I know',
+				topic: '',
+			};
+			return request(app)
+				.post('/api/articles')
+				.send(newArticle)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toEqual('Article is not complete.');
+				});
+		});
+	});
 });
 describe('/api/articles/:article_id', () => {
 	describe('GET', () => {

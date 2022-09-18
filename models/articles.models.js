@@ -142,7 +142,56 @@ exports.selectCommentsByArticleId = (article_id) => {
 		});
 };
 
-exports.insertPost = (newComment, article_id) => {
+exports.insertArticle = (newArticle) => {
+	for (const key in newArticle) {
+		if (typeof newArticle[key] !== 'string') {
+			return Promise.reject({
+				status: 400,
+				msg: `Wrong data type.`,
+			});
+		} else if (newArticle[key] === '') {
+			return Promise.reject({
+				status: 400,
+				msg: `Article is not complete.`,
+			});
+		}
+	}
+	const { author, title, body, topic } = newArticle;
+
+	return db
+		.query(
+			`
+		INSERT INTO articles (author, title, body, topic)
+		VALUES
+		($1, $2, $3, $4)
+		RETURNING *;
+		`,
+			[author, title, body, topic]
+		)
+		.then(() => {
+			return db.query(
+				`
+				SELECT
+				articles.article_id, 
+				articles.title, 
+				articles.topic, 
+				articles.author, 
+				articles.body, 
+				articles.created_at, 
+				articles.votes,
+				COUNT(comments.article_id)::INT AS comment_count
+				FROM articles
+				LEFT JOIN comments ON articles.article_id = comments.article_id 
+				GROUP BY articles.article_id ORDER BY articles.article_id DESC;
+			`
+			);
+		})
+		.then((result) => {
+			return result.rows[0];
+		});
+};
+
+exports.insertCommentByArticleId = (newComment, article_id) => {
 	const { username, body } = newComment;
 
 	if (typeof body !== 'string') {
