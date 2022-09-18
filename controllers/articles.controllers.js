@@ -3,7 +3,8 @@ const {
 	updateArticleVotes,
 	selectArticles,
 	selectCommentsByArticleId,
-	insertPost,
+	insertCommentByArticleId,
+	insertArticle,
 } = require('../models/articles.models');
 
 exports.getArticles = (req, res, next) => {
@@ -46,10 +47,19 @@ exports.getCommentsByArticleId = (req, res, next) => {
 		.catch(next);
 };
 
+exports.postArticle = (req, res, next) => {
+	const newArticle = req.body;
+
+	insertArticle(newArticle)
+		.then((article) => {
+			res.status(201).send({ article });
+		})
+		.catch(next);
+};
 exports.postCommentByArticleId = (req, res, next) => {
 	const { article_id } = req.params;
 	const newComment = req.body;
-	insertPost(newComment, article_id)
+	insertCommentByArticleId(newComment, article_id)
 		.then((comment) => {
 			res.status(201).send({ comment });
 		})
