@@ -1,50 +1,15 @@
 const express = require('express');
-const { getTopics } = require('./controllers/topics.controllers');
-const {
-	getArticleById,
-	patchArticleById,
-	getArticles,
-	getCommentsByArticleId,
-	postCommentByArticleId,
-	postArticle,
-} = require('./controllers/articles.controllers');
-const {
-	getUsers,
-	getUserByUsername,
-} = require('./controllers/users.controllers');
-const {
-	deleteCommentById,
-	patchCommentById,
-} = require('./controllers/comments.controllers');
-const { getApi } = require('./controllers/api.controllers');
+
+const apiRouter = require('./routes/api.router');
 
 const app = express();
 
 app.use(express.json());
 
-//api
-app.get('/api', getApi);
-//topics
-app.get('/api/topics', getTopics);
-
-// articles
-app.get('/api/articles', getArticles);
-app.get('/api/articles/:article_id', getArticleById);
-app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
-app.post('/api/articles', postArticle);
-app.post('/api/articles/:article_id/comments', postCommentByArticleId);
-app.patch('/api/articles/:article_id', patchArticleById);
-
-//users
-app.get('/api/users', getUsers);
-app.get('/api/users/:username', getUserByUsername);
-
-//comments
-app.patch('/api/comments/:comment_id', patchCommentById);
-app.delete('/api/comments/:comment_id', deleteCommentById);
+app.use('/api', apiRouter);
 
 //error handling
-app.use('/*', (req, res, next) => {
+app.use('/*', (req, res) => {
 	res.status(404).send({ msg: 'Page not found.' });
 });
 
