@@ -26,7 +26,7 @@ npm install -D supertest
 
 ### 3. Seed local database
 
-The database is PSQL, and we will interact with it using node-postgres.
+The database is PSQL, and you will interact with it using node-postgres.
 You can add these two scripts to package.json
 
 ```
@@ -37,7 +37,7 @@ You can add these two scripts to package.json
   }
 ```
 
-And then run it
+And then run:
 
 ```
 npm run setup-dbs
@@ -68,7 +68,7 @@ And the `.env.development` file should be:
 PGDATABASE=nc_news
 ```
 
-**_Double check_** that these .env files are `.gitignored`.
+Double check that these .env files are `.gitignored`.
 
 ### 5. Run tests
 
