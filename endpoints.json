@@ -9,7 +9,7 @@
 			"topics": [{ "slug": "football", "description": "Footie!" }]
 		}
 	},
-	"GET /api/user": {
+	"GET /api/users": {
 		"description": "serves an array of users",
 		"queries": [],
 		"exampleResponse": {
